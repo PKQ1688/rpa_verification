@@ -1,5 +1,22 @@
-Train_Config:
-
-  model_path:
-Inference_Config:
+GeneralConfig:
+  app_scenes: "jindie"
+  alphabet: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+             'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+             'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
+             'Z', 'X', 'C', 'V', 'B', 'N', 'M',
+             'q','w','e','r','t','y','u','i','o','p',
+             'a','s','d','f','g','h','j','k','l',
+             'z','x','c','v','b','n','m','-']
+  short_size: 32 #'short_size has to be a multiple of 16'
+  length: 4
+TrainConfig:
+  train_data_path: "/Users/zhutaonan/Desktop/project/验证码/markcode2762"
+  Device: "cpu"
+  model_path: "Identify_English/weight"
+  epochs: 1200
+  lr: 1e-3
+  batch_size: 256
+  num_works: 0
+InferenceConfig:
+  Device: "cpu"
   model_path:
