@@ -145,7 +145,7 @@ class Train(object):
                 if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
                     res_str += preds_decode_list[i]
             pred_label, _ = self.valid_datasets.converter_text_to_label(res_str)
-            if random.randint(0, 100) == 50:
+            if random.randint(0, 200) == 50:
                 print('label:', label)
                 print('pred_label', pred_label)
                 print('res_str', res_str)
