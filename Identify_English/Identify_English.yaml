@@ -19,4 +19,4 @@ TrainConfig:
   num_works: 0 # how many processes are used to data preprocess
 InferenceConfig:
   Device: "cpu" # use cpu or gpu;"cpu" or "cuda"
-  model_path: "" # where predict model storage
+  model_path: "Identify_English/weight" # where predict model storage

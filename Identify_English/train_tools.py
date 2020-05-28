@@ -119,7 +119,7 @@ class Train(object):
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), 10)
             self.optimizer.step()
 
-            if (batch_idx + 1) % 10 == 0:
+            if batch_idx % 10 == 0:
                 print('Epoch [{}], Step [{}], Loss: {:.4f}'
                       .format(epoch + 1, batch_idx + 1, loss.item()))
 
@@ -163,12 +163,13 @@ class Train(object):
             self.train_one_epoch(epoch)
             epoch_end_time = time.time()
             print("Epoch [{}] all use time:[{:.2f}]".format(epoch, epoch_end_time - epoch_start_time))
-            val_acc = self.val_model()
-
-            if val_acc > self.val_best_acc:
-                torch.save(self.model.state_dict(),
-                           os.path.join(self.model_path,
-                                        self.app_scenes + "_verification.pth"))
+            if epoch > 100 and epoch % 3 == 0:
+                val_acc = self.val_model()
+                print('valid data accuracy:', val_acc)
+                if val_acc > self.val_best_acc:
+                    torch.save(self.model.state_dict(),
+                               os.path.join(self.model_path,
+                                            self.app_scenes + "_verification.pth"))
 
 
 if __name__ == '__main__':

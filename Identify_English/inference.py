@@ -25,7 +25,8 @@ class CRNNInference(object):
         self.verification_length = general_config['length']
 
         self.device = infer_config['Device']
-        self.model_path = infer_config['model_path']
+        self.model_path = os.path.join(infer_config['model_path'],
+                                       self.app_scenes + "_verification.pth")
 
         self.transform = transforms.Compose([transforms.ToTensor()])
 
@@ -36,11 +37,8 @@ class CRNNInference(object):
 
     def init_torch_tensor(self):
         torch.set_default_tensor_type('torch.FloatTensor')
-        if torch.cuda.is_available():
-            self.device = torch.device('cuda')
+        if self.device != "cpu":
             torch.set_default_tensor_type('torch.cuda.FloatTensor')
-        else:
-            self.device = torch.device('cpu')
 
     def resume(self):
         self.model.load_state_dict(torch.load(self.model_path, map_location=self.device), strict=True)
