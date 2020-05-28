@@ -10,7 +10,7 @@ GeneralConfig:
   short_size: 32 #'short_size has to be a multiple of 16'
   length: 4
 TrainConfig:
-  train_data_path: "/Users/zhutaonan/Desktop/project/验证码/markcode2762"
+  train_data_path: "/home/shizai/adolf/data/jindie/"
   Device: "cpu"
   model_path: "Identify_English/weight"
   epochs: 1200
