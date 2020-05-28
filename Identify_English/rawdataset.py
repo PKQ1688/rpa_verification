@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 class RawDataset(data.Dataset):
-    def __init__(self, file_path, imgH, alphabet_dict, is_training):
+    def __init__(self, file_path, imgH, alphabet_dict, verification_length, is_training):
         # for png_name in data_list:
         #     img = cv2.imread(file_path + png_name)
         #     assert img.shape[2] == 3, "请读入3通道图片"
@@ -45,7 +45,7 @@ class RawDataset(data.Dataset):
             assert img.shape[2] == 3, "请读入3通道图片"
             img = cv2.resize(img, (self.imgW, self.imgH))
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            label = img_name.split('.')[0]
+            label = img_name.split('.')[0][:verification_length]
             self.img_input.append((img, label))
 
         self.alphabet_dict = alphabet_dict
@@ -62,8 +62,8 @@ class RawDataset(data.Dataset):
         return img, label, length
 
     def converter_text_to_label(self, label_str):
-        print(label_str)
-        print(self.alphabet_dict)
+        # print(label_str)
+        # print(self.alphabet_dict)
         label = [self.alphabet_dict[char] for char in label_str]
         length = [len(label)]
         return torch.IntTensor(label), torch.IntTensor(length)

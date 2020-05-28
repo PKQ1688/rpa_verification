@@ -27,6 +27,7 @@ class Train(object):
         self.decode_alphabet_dict = {v: k for k, v in self.alphabet_dict.items()}
 
         self.short_size = general_config['short_size']
+        self.verification_length = general_config['length']
 
         self.data_path = train_config['train_data_path']
         self.device = train_config['Device']
@@ -66,12 +67,14 @@ class Train(object):
         self.train_datasets = RawDataset(file_path=self.data_path,
                                          imgH=self.short_size,
                                          alphabet_dict=self.alphabet_dict,
+                                         verification_length=self.verification_length,
                                          is_training=True)
         # valid_datasets = train_datasets
         #
         self.valid_datasets = RawDataset(file_path=self.data_path,
                                          imgH=self.short_size,
                                          alphabet_dict=self.alphabet_dict,
+                                         verification_length=self.verification_length,
                                          is_training=False)
 
     def data_loaders(self):
