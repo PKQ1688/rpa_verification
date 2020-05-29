@@ -13,7 +13,7 @@ setuptools.setup(
     description="A Tools for use algorithm for verification recognition",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://code.ii-ai.tech/zhutaonan/rpa_verification.git",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
