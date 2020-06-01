@@ -7,6 +7,7 @@ import numpy as np
 import os
 import torch
 import torchvision.transforms as transforms
+from PIL import Image
 
 from rpa_ocr.Identify_English.use_alphabet import *
 from rpa_ocr.Identify_English.crnn_model import CRNN
@@ -77,8 +78,14 @@ class CRNNInference(object):
 
         return alphabet
 
-    def predict(self, image_base64):
-        img = self.base64_to_opencv(image_base64)
+    def predict(self, image):
+        if isinstance(image, np.ndarray):
+            img = image
+        else:
+            if isinstance(image, str):
+                img = self.base64_to_opencv(image)
+            elif isinstance(image, Image.Image):
+                img = cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
 
         imgW = int(img.shape[1] * self.short_size / img.shape[0])
         img = cv2.resize(img, (imgW, self.short_size))
@@ -108,3 +115,31 @@ class CRNNInference(object):
         if len(res_str) > self.verification_length:
             res_str = res_str[-self.verification_length:]
         return res_str
+
+
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Params to use fro train algorithm")
+    parser.add_argument("--app_scenes", "-sc", type=str,
+                        default=argparse.SUPPRESS, nargs='?', help="what scenes this model used")
+    parser.add_argument("--alphabet_mode", "-a", type=str,
+                        default="eng", nargs='?', help="alphabet what is used,'eng','ch','ENG'")
+    parser.add_argument("--model_path", "-m", type=str,
+                        default=argparse.SUPPRESS, nargs='?', help="path to save model")
+    parser.add_argument("--short_size", "-sh", type=int,
+                        default=32, nargs='?', help="short_size has to be a multiple of 16")
+    parser.add_argument("--verification_length", "-v", type=int, const=True,
+                        default=4, nargs='?', help="length of verification")
+    parser.add_argument("--device", "-dev", type=str,
+                        default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
+    args = parser.parse_args()
+
+    crnn = CRNNInference(app_scenes=args.app_scenes,
+                         alphabet_mode=args.alphabet_mode,
+                         model_path=args.model_path,
+                         short_size=args.short_size,
+                         verification_length=args.verification_length,
+                         device=args.device)
+
+    crnn.predict(image=None)
