@@ -4,6 +4,7 @@ from rpa_ocr.Identify_English.crnn_model import CRNN
 from rpa_ocr.Identify_English import RawDataset
 
 import os
+import sys
 import time
 import random
 from tqdm import tqdm
@@ -16,28 +17,68 @@ import torch.nn.functional as F
 
 
 class Train(object):
-    def __init__(self, params):
-        general_config = params['GeneralConfig']
-        train_config = params['TrainConfig']
+    '''
+    :param app_scenes: what scenes this model used
+    :param alphabet: which alphabet is used,now is supported "ch","eng","ENG"
+    :param data_path: where data storage
+    :param model_path: path to save model
+    :param short_size: short_size has to be a multiple of 16
+    :param verification_length: length of verification; TODO support variable length of verification
+    :param device: use cpu or gpu;"cpu" or "cuda"
+    :param epochs: how long to train model
+    :param lr: learning rate
+    :param batch_size: how much data to train on one batch
+    :param num_works: how many processes are used to data preprocess
+    '''
 
-        self.app_scenes = general_config['app_scenes']
+    def __init__(self,
+                 app_scenes,
+                 alphabet,
+                 data_path=None,
+                 model_path=None,
+                 short_size=32,
+                 verification_length=4,
+                 device='cpu',
+                 epochs=1200,
+                 lr=1e-3,
+                 batch_size=256,
+                 num_works=0):
+        # general_config = params['GeneralConfig']
+        # train_config = params['TrainConfig']
 
-        alphabet = general_config['alphabet']
+        if app_scenes is None:
+            print('请输入使用场景')
+            sys.exit(1)
+
+        if alphabet is None:
+            print('请输入使用字母表,"ch"表示中文字符,"eng"表示英文大小写+数字,"ENG"表示英文大写+数字')
+            sys.exit(1)
+
+        if data_path is None:
+            print('请输入存放图片的路径')
+            sys.exit(1)
+
+        if model_path is None:
+            print('请输入存放模型文件的地址')
+            sys.exit(1)
+
+        self.app_scenes = app_scenes
+
         self.alphabet_dict = {alphabet[i]: i for i in range(len(alphabet))}
         self.decode_alphabet_dict = {v: k for k, v in self.alphabet_dict.items()}
 
-        self.short_size = general_config['short_size']
-        self.verification_length = general_config['length']
+        self.short_size = short_size
+        self.verification_length = verification_length
 
-        self.data_path = train_config['train_data_path']
-        self.device = train_config['Device']
-        self.model_path = train_config['model_path']
+        self.data_path = data_path
+        self.device = device
+        self.model_path = model_path
         if not os.path.exists(self.model_path):
             os.mkdir(self.model_path)
-        self.epochs = train_config['epochs']
-        self.lr = train_config['lr']
-        self.batch_size = train_config['batch_size']
-        self.workers = train_config['num_works']
+        self.epochs = epochs
+        self.lr = lr
+        self.batch_size = batch_size
+        self.workers = num_works
 
         # nh:size of the lstm hidden state
         self.model = CRNN(imgH=self.short_size, nc=1, nclass=len(alphabet), nh=256)
@@ -173,12 +214,49 @@ class Train(object):
 
 
 if __name__ == '__main__':
-    import yaml
+    # import yaml
 
     # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
-    with open('Identify_English/Identify_English.yaml', 'r') as fp:
-        config = yaml.load(fp.read(), Loader=yaml.FullLoader)
+    # with open('Identify_English/Identify_English.yaml', 'r') as fp:
+    #     config = yaml.load(fp.read(), Loader=yaml.FullLoader)
+    import argparse
 
-    trainer = Train(params=config)
+    parser = argparse.ArgumentParser(description="Params to use fro train algorithm")
+    parser.add_argument("--app_scenes", "-s", type=str,
+                        default=argparse.SUPPRESS, nargs='?', help="what scenes this model used")
+    parser.add_argument("--alphabet", "-a", type=str,
+                        default=argparse.SUPPRESS, nargs='?', help="alphabet what is used")
+    parser.add_argument("--data_path", "-d", type=str,
+                        default=argparse.SUPPRESS, nargs='*', help="where data storage")
+    parser.add_argument("--model_path", "-m", type=str,
+                        default=argparse.SUPPRESS, nargs='*', help="path to save model")
+    parser.add_argument("--short_size", "-s", type=int,
+                        default=32, nargs='?', help="short_size has to be a multiple of 16")
+    parser.add_argument("--verification_length", "-v", type=int, const=True,
+                        default=4, nargs='?', help="length of verification")
+    parser.add_argument("--device", "-dev", type=str,
+                        efault="cpu", nargs='?', const=True, help="use cpu or gpu;'cpu' or 'cuda'")
+    parser.add_argument("--epochs", "-e", type=int,
+                        default=1200, nargs='?', help="if you don't know what meaning,using default")
+    parser.add_argument("--lr", "-l", type=float,
+                        default=1e-3, nargs='?', help="if you don't know what meaning,using default")
+    parser.add_argument("--batch_size", "-b", type=int,
+                        default=256, nargs='?', help="if you don't know what meaning,using default")
+    parser.add_argument("--num_works", "-n", type=int,
+                        default=0, nargs='?', help=" how many processes are used to data")
+    args = parser.parse_args()
+
+    trainer = Train(app_scenes=args.app_scenes,
+                    alphabet=args.alphabet,
+                    data_path=args.data_path,
+                    model_path=args.model_path,
+                    short_size=args.short_size,
+                    verification_length=args.verification_length,
+                    device=args.device,
+                    epochs=args.epochs,
+                    lr=args.lr,
+                    batch_size=args.batch_size,
+                    num_works=args.num_works)
+
     trainer.main()
