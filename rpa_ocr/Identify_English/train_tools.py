@@ -19,7 +19,7 @@ import torch.nn.functional as F
 class Train(object):
     '''
     :param app_scenes: what scenes this model used
-    :param alphabet: which alphabet is used,now is supported "ch","eng","ENG"
+    :param alphabet_mode: which alphabet is used,now is supported "ch","eng","ENG"
     :param data_path: where data storage
     :param model_path: path to save model
     :param short_size: short_size has to be a multiple of 16
@@ -33,7 +33,7 @@ class Train(object):
 
     def __init__(self,
                  app_scenes,
-                 alphabet,
+                 alphabet_mode,
                  data_path=None,
                  model_path=None,
                  short_size=32,
@@ -50,7 +50,7 @@ class Train(object):
             print('请输入使用场景')
             sys.exit(1)
 
-        if alphabet is None:
+        if alphabet_mode is None:
             print('请输入使用字母表,"ch"表示中文字符,"eng"表示英文大小写+数字,"ENG"表示英文大写+数字')
             sys.exit(1)
 
@@ -64,6 +64,7 @@ class Train(object):
 
         self.app_scenes = app_scenes
 
+        alphabet = self.read_txt(alphabet_mode)
         self.alphabet_dict = {alphabet[i]: i for i in range(len(alphabet))}
         self.decode_alphabet_dict = {v: k for k, v in self.alphabet_dict.items()}
 
@@ -117,6 +118,13 @@ class Train(object):
                                          alphabet_dict=self.alphabet_dict,
                                          verification_length=self.verification_length,
                                          is_training=False)
+
+    @staticmethod
+    def read_txt(alphabet_mode):
+        res_list = list()
+        # for lines in
+
+        return res_list
 
     def data_loaders(self):
         loader_train = data.DataLoader(
@@ -225,8 +233,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Params to use fro train algorithm")
     parser.add_argument("--app_scenes", "-s", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="what scenes this model used")
-    parser.add_argument("--alphabet", "-a", type=str,
-                        default=argparse.SUPPRESS, nargs='?', help="alphabet what is used")
+    parser.add_argument("--alphabet_mode", "-a", type=str,
+                        default=argparse.SUPPRESS, nargs='?', help="alphabet what is used,'eng','ch','ENG'")
     parser.add_argument("--data_path", "-d", type=str,
                         default=argparse.SUPPRESS, nargs='*', help="where data storage")
     parser.add_argument("--model_path", "-m", type=str,
@@ -248,7 +256,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     trainer = Train(app_scenes=args.app_scenes,
-                    alphabet=args.alphabet,
+                    alphabet_mode=args.alphabet_mode,
                     data_path=args.data_path,
                     model_path=args.model_path,
                     short_size=args.short_size,
