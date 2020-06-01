@@ -242,6 +242,10 @@ if __name__ == '__main__':
     #     config = yaml.load(fp.read(), Loader=yaml.FullLoader)
     import argparse
 
+    # test command:
+    # python -m rpa_ocr.Identify_English.train_tools -sc jindie -a eng
+    # -data /home/shizai/adolf/data/jindie -m /home/shizai/adolf/model/
+
     parser = argparse.ArgumentParser(description="Params to use fro train algorithm")
     parser.add_argument("--app_scenes", "-sc", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="what scenes this model used")
