@@ -1,30 +1,45 @@
 # -*- coding:utf-8 -*-
 # @author :adolf
+import sys
 import base64
 import cv2
 import numpy as np
 import os
 import torch
 import torchvision.transforms as transforms
+
+from rpa_ocr.Identify_English.use_alphabet import *
 from rpa_ocr.Identify_English.crnn_model import CRNN
 
 
 class CRNNInference(object):
-    def __init__(self, params):
-        general_config = params['GeneralConfig']
-        infer_config = params['InferenceConfig']
+    def __init__(self,
+                 app_scenes=None,
+                 alphabet_mode='eng',
+                 short_size=32,
+                 verification_length=4,
+                 device='cpu',
+                 model_path=None):
+        # general_config = params['GeneralConfig']
+        # infer_config = params['InferenceConfig']
+        if app_scenes is None:
+            print('请输入使用场景')
+            sys.exit(1)
 
-        self.app_scenes = general_config['app_scenes']
+        if model_path is None:
+            print('请输入存放模型文件的地址')
+            sys.exit(1)
+        self.app_scenes = app_scenes
 
-        alphabet = general_config['alphabet']
+        alphabet = self.read_alphabet(alphabet_mode)
         self.alphabet_dict = {alphabet[i]: i for i in range(len(alphabet))}
         self.decode_alphabet_dict = {v: k for k, v in self.alphabet_dict.items()}
 
-        self.short_size = general_config['short_size']
-        self.verification_length = general_config['length']
+        self.short_size = short_size
+        self.verification_length = verification_length
 
-        self.device = infer_config['Device']
-        self.model_path = os.path.join(infer_config['model_path'],
+        self.device = device
+        self.model_path = os.path.join(model_path,
                                        self.app_scenes + "_verification.pth")
 
         self.transform = transforms.Compose([transforms.ToTensor()])
@@ -49,6 +64,18 @@ class CRNNInference(object):
         img_array = np.frombuffer(img, np.uint8)
         img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
         return img
+
+    @staticmethod
+    def read_alphabet(alphabet_mode):
+        # res_list = list()
+        if alphabet_mode == "eng":
+            alphabet = english_alphabet
+        elif alphabet_mode == "ENG":
+            alphabet = english_alphabet_big
+        else:
+            alphabet = chinese_alphabet
+
+        return alphabet
 
     def predict(self, image_base64):
         img = self.base64_to_opencv(image_base64)

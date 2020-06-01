@@ -34,7 +34,7 @@ class Train(object):
 
     def __init__(self,
                  app_scenes,
-                 alphabet_mode,
+                 alphabet_mode='eng',
                  data_path=None,
                  model_path=None,
                  short_size=32,
@@ -51,9 +51,9 @@ class Train(object):
             print('请输入使用场景')
             sys.exit(1)
 
-        if alphabet_mode is None:
-            print('请输入使用字母表,"ch"表示中文字符,"eng"表示英文大小写+数字,"ENG"表示英文大写+数字')
-            sys.exit(1)
+        # if alphabet_mode is None:
+        #     print('请输入使用字母表,"ch"表示中文字符,"eng"表示英文大小写+数字,"ENG"表示英文大写+数字')
+        #     sys.exit(1)
 
         if data_path is None:
             print('请输入存放图片的路径')
@@ -247,7 +247,7 @@ if __name__ == '__main__':
     parser.add_argument("--app_scenes", "-sc", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="what scenes this model used")
     parser.add_argument("--alphabet_mode", "-a", type=str,
-                        default=argparse.SUPPRESS, nargs='?', help="alphabet what is used,'eng','ch','ENG'")
+                        default="eng", nargs='?', help="alphabet what is used,'eng','ch','ENG'")
     parser.add_argument("--data_path", "-data", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="where data storage")
     parser.add_argument("--model_path", "-m", type=str,
