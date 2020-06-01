@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 # @author :adolf
 from rpa_ocr.Identify_English.crnn_model import CRNN
-from rpa_ocr.Identify_English import RawDataset
+from rpa_ocr.Identify_English.rawdataset import RawDataset
 
 import os
 import sys
@@ -65,6 +65,8 @@ class Train(object):
         self.app_scenes = app_scenes
 
         alphabet = self.read_txt(alphabet_mode)
+        # print(alphabet)
+
         self.alphabet_dict = {alphabet[i]: i for i in range(len(alphabet))}
         self.decode_alphabet_dict = {v: k for k, v in self.alphabet_dict.items()}
 
@@ -74,6 +76,7 @@ class Train(object):
         self.data_path = data_path
         self.device = device
         self.model_path = model_path
+        print(model_path)
         if not os.path.exists(self.model_path):
             os.mkdir(self.model_path)
         self.epochs = epochs
@@ -122,7 +125,14 @@ class Train(object):
     @staticmethod
     def read_txt(alphabet_mode):
         res_list = list()
-        # for lines in
+        if alphabet_mode == "eng":
+            with open('rpa_ocr/Identify_English/english_alphabet.txt', 'r') as f:
+                for line in f.readlines():
+                    res_list.append(line.strip())
+        if alphabet_mode == "ENG":
+            pass
+        if alphabet_mode == "ch":
+            pass
 
         return res_list
 
@@ -231,20 +241,20 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description="Params to use fro train algorithm")
-    parser.add_argument("--app_scenes", "-s", type=str,
+    parser.add_argument("--app_scenes", "-sc", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="what scenes this model used")
     parser.add_argument("--alphabet_mode", "-a", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="alphabet what is used,'eng','ch','ENG'")
-    parser.add_argument("--data_path", "-d", type=str,
-                        default=argparse.SUPPRESS, nargs='*', help="where data storage")
+    parser.add_argument("--data_path", "-data", type=str,
+                        default=argparse.SUPPRESS, nargs='?', help="where data storage")
     parser.add_argument("--model_path", "-m", type=str,
-                        default=argparse.SUPPRESS, nargs='*', help="path to save model")
-    parser.add_argument("--short_size", "-s", type=int,
+                        default=argparse.SUPPRESS, nargs='?', help="path to save model")
+    parser.add_argument("--short_size", "-sh", type=int,
                         default=32, nargs='?', help="short_size has to be a multiple of 16")
     parser.add_argument("--verification_length", "-v", type=int, const=True,
                         default=4, nargs='?', help="length of verification")
     parser.add_argument("--device", "-dev", type=str,
-                        efault="cpu", nargs='?', const=True, help="use cpu or gpu;'cpu' or 'cuda'")
+                        default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     parser.add_argument("--epochs", "-e", type=int,
                         default=1200, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--lr", "-l", type=float,
