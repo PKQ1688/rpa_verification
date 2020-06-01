@@ -2,6 +2,7 @@
 # @author :adolf
 from rpa_ocr.Identify_English.crnn_model import CRNN
 from rpa_ocr.Identify_English.rawdataset import RawDataset
+from rpa_ocr.Identify_English.use_alphabet import *
 
 import os
 import sys
@@ -64,7 +65,7 @@ class Train(object):
 
         self.app_scenes = app_scenes
 
-        alphabet = self.read_txt(alphabet_mode)
+        alphabet = self.read_alphabet(alphabet_mode)
         # print(alphabet)
 
         self.alphabet_dict = {alphabet[i]: i for i in range(len(alphabet))}
@@ -123,20 +124,16 @@ class Train(object):
                                          is_training=False)
 
     @staticmethod
-    def read_txt(alphabet_mode):
-        res_list = list()
+    def read_alphabet(alphabet_mode):
+        # res_list = list()
         if alphabet_mode == "eng":
-            with open('rpa_ocr/Identify_English/english_alphabet.txt', 'r') as f:
-                for line in f.readlines():
-                    res_list.append(line.strip())
-        if alphabet_mode == "ENG":
-            with open('rpa_ocr/Identify_English/english_alphabet_big.txt', 'r') as f:
-                for line in f.readlines():
-                    res_list.append(line.strip())
-        if alphabet_mode == "ch":
-            pass
+            alphabet = english_alphabet
+        elif alphabet_mode == "ENG":
+            alphabet = english_alphabet_big
+        else:
+            alphabet = chinese_alphabet
 
-        return res_list
+        return alphabet
 
     def data_loaders(self):
         loader_train = data.DataLoader(
