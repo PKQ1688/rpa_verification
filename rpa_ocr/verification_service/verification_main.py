@@ -3,7 +3,7 @@
 import os
 import yaml
 
-from Identify_English.inference import CRNNInference
+from rpa_ocr.Identify_English.inference import CRNNInference
 
 
 def ocr_pipeline_main(image_with_base64, scenes):

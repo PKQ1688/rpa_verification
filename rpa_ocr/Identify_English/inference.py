@@ -6,8 +6,7 @@ import numpy as np
 import os
 import torch
 import torchvision.transforms as transforms
-from torch import nn
-from Identify_English.crnn_model import CRNN
+from rpa_ocr.Identify_English.crnn_model import CRNN
 
 
 class CRNNInference(object):

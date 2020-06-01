@@ -4,7 +4,7 @@ import json
 from flask import Flask
 from flask import request
 import traceback
-from verification_service.verification_main import ocr_pipeline_main
+from rpa_ocr.verification_service.verification_main import ocr_pipeline_main
 from flask_cors import CORS
 
 """

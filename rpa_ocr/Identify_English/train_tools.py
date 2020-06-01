@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 # @author :adolf
-from Identify_English.crnn_model import CRNN
-from Identify_English.rawdataset import RawDataset
+from rpa_ocr.Identify_English.crnn_model import CRNN
+from rpa_ocr.Identify_English import RawDataset
 
 import os
 import time

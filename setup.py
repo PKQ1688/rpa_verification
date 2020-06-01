@@ -6,8 +6,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="AllenVerification",
-    version="0.0.1",
+    name="rpa_ocr",
+    version="0.0.2",
     author="adolf",
     author_email="adolf1321794021@gmail.com",
     description="A Tools for use algorithm for verification recognition",
