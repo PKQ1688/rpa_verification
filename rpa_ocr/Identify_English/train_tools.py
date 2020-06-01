@@ -130,7 +130,9 @@ class Train(object):
                 for line in f.readlines():
                     res_list.append(line.strip())
         if alphabet_mode == "ENG":
-            pass
+            with open('rpa_ocr/Identify_English/english_alphabet_big.txt', 'r') as f:
+                for line in f.readlines():
+                    res_list.append(line.strip())
         if alphabet_mode == "ch":
             pass
 
@@ -180,7 +182,7 @@ class Train(object):
 
             if batch_idx % 10 == 0:
                 print('Epoch [{}], Step [{}], Loss: {:.4f}'
-                      .format(epoch + 1, batch_idx + 1, loss.item()))
+                      .format(epoch, batch_idx, loss.item()))
 
     def val_model(self):
         self.model.eval()
