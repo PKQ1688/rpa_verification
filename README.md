@@ -57,7 +57,7 @@ train.main()
 
 ```
  app_scenes: 当前验证码的使用场景，也是全局标识符
- alphabet_mode: 使用哪种模式的字母表,目前支持"ch"(中文）,"eng"(英文大小写）,"ENG"（英文大写)。default:"end"
+ alphabet_mode: 使用哪种模式的字母表,目前支持"ch"(中文）,"eng"(英文大小写）,"ENG"（英文大写)。default:"eng"
  model_path: 使用model所在文件夹目录
  short_size: 图片的高度，必须是16的倍数。default:32
  verification_length: 验证码的长度。default:4
