@@ -142,4 +142,6 @@ if __name__ == '__main__':
                          verification_length=args.verification_length,
                          device=args.device)
 
-    crnn.predict(image=None)
+    image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6Ds.png')
+
+    print(crnn.predict(image=image))

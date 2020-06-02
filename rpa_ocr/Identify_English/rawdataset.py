@@ -39,14 +39,19 @@ class RawDataset(data.Dataset):
         self.img_input = list()
 
         for img_name in tqdm(self.patients):
-            img_path = os.path.join(self.root, img_name)
-            img = cv2.imread(img_path)
-            self.imgW = int(img.shape[1] * self.imgH / img.shape[0])
-            assert img.shape[2] == 3, "请读入3通道图片"
-            img = cv2.resize(img, (self.imgW, self.imgH))
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            label = img_name.split('.')[0][:verification_length]
-            self.img_input.append((img, label))
+            try:
+                img_path = os.path.join(self.root, img_name)
+                img = cv2.imread(img_path)
+                self.imgW = int(img.shape[1] * self.imgH / img.shape[0])
+                assert img.shape[2] == 3, "请读入3通道图片"
+                img = cv2.resize(img, (self.imgW, self.imgH))
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                label = img_name.split('.')[0][:verification_length]
+                self.img_input.append((img, label))
+            except Exception as e:
+                print(img_name)
+                print(e)
+                continue
 
         self.alphabet_dict = alphabet_dict
         self.transform = transforms.Compose([transforms.ToTensor()])
