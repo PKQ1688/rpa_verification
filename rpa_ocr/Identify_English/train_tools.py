@@ -30,6 +30,7 @@ class Train(object):
     :param lr: learning rate
     :param batch_size: how much data to train on one batch
     :param num_works: how many processes are used to data preprocess
+    :param target_acc: The target accuracy
     '''
 
     def __init__(self,
@@ -43,7 +44,8 @@ class Train(object):
                  epochs=1200,
                  lr=1e-3,
                  batch_size=256,
-                 num_works=0):
+                 num_works=0,
+                 target_acc=0.95):
         # general_config = params['GeneralConfig']
         # train_config = params['TrainConfig']
 
@@ -99,6 +101,9 @@ class Train(object):
         self.train_loader, self.valid_loader = self.data_loaders()
 
         self.val_best_acc = 0
+        self.target_acc = target_acc
+
+        self.patient_epoch = 0
 
     @staticmethod
     def weights_init(m):
@@ -131,7 +136,10 @@ class Train(object):
         elif alphabet_mode == "ENG":
             alphabet = english_alphabet_big
         else:
-            alphabet = chinese_alphabet
+            # alphabet_str = chinese_alphabet
+            alphabet = list(chinese_alphabet)
+            alphabet.append('-')
+            # print(alphabet)
 
         return alphabet
 
@@ -228,6 +236,11 @@ class Train(object):
                     torch.save(self.model.state_dict(),
                                os.path.join(self.model_path,
                                             self.app_scenes + "_verification.pth"))
+                    self.patient_epoch = 0
+                else:
+                    self.patient_epoch += 1
+                if self.val_best_acc > self.target_acc or self.patient_epoch > 30:
+                    break
 
 
 if __name__ == '__main__':
@@ -265,8 +278,14 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", "-b", type=int,
                         default=256, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--num_works", "-n", type=int,
-                        default=0, nargs='?', help=" how many processes are used to data")
+                        default=0, nargs='?', help="how many processes are used to data")
+    parser.add_argument("--target_acc", "-t", type=float,
+                        default=0.95, nargs='?', help="The target accuracy")
     args = parser.parse_args()
+
+    args.app_scenes = 'jindie'
+    args.data_path = '/home/shizai/adolf/data/jindie/'
+    args.model_path = '/home/shizai/adolf/model/'
 
     trainer = Train(app_scenes=args.app_scenes,
                     alphabet_mode=args.alphabet_mode,
@@ -278,6 +297,8 @@ if __name__ == '__main__':
                     epochs=args.epochs,
                     lr=args.lr,
                     batch_size=args.batch_size,
-                    num_works=args.num_works)
+                    num_works=args.num_works,
+                    target_acc=args.target_acc)
 
-    trainer.main()
+    # trainer.main()
+    trainer.read_alphabet("ch")
