@@ -6,13 +6,13 @@ import yaml
 from rpa_ocr.Identify_English.inference import CRNNInference
 
 
-def ocr_pipeline_main(image_with_base64, scenes):
-    config_path = os.path.join('verification_service/config', scenes + '.yaml')
-    with open(config_path, 'r') as fp:
-        config = yaml.load(fp.read(), Loader=yaml.FullLoader)
-
-    with open(config['_BASE_'], 'r') as fp:
-        base_config = yaml.load(fp.read(), Loader=yaml.FullLoader)
+def ocr_pipeline_main(image_with_base64, app_scenes):
+    # config_path = os.path.join('verification_service/config', scenes + '.yaml')
+    # with open(config_path, 'r') as fp:
+    #     config = yaml.load(fp.read(), Loader=yaml.FullLoader)
+    #
+    # with open(config['_BASE_'], 'r') as fp:
+    #     base_config = yaml.load(fp.read(), Loader=yaml.FullLoader)
 
     # print(base_config)
     # print(config)
@@ -20,7 +20,10 @@ def ocr_pipeline_main(image_with_base64, scenes):
     #     base_config[key] = config[key]
 
     # print(base_config)
-    res_str = CRNNInference(base_config).predict(image_with_base64)
+    crnn = CRNNInference(app_scenes=app_scenes,
+                         model_path='model')
+    res_str = crnn.predict(image_with_base64)
+    # res_str = CRNNInference(base_config).predict(image_with_base64)
     return res_str
 
 
@@ -42,7 +45,7 @@ if __name__ == '__main__':
     total = 200
     positive = 0
     for img_name in img_list[:total]:
-        with open(os.path.join(img_p,img_name), 'rb') as f:
+        with open(os.path.join(img_p, img_name), 'rb') as f:
             image = f.read()
             image_base64 = str(base64.b64encode(image), 'utf-8')
 
