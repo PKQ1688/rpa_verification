@@ -96,6 +96,7 @@ class CRNNInference(object):
 
         img = img.unsqueeze(0)
         with torch.no_grad():
+            print(img.size())
             output = self.model(img)
 
         output = output.squeeze()
@@ -134,6 +135,9 @@ if __name__ == '__main__':
     parser.add_argument("--device", "-dev", type=str,
                         default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     args = parser.parse_args()
+
+    args.app_scenes = 'custom'
+    args.model_path = 'rpa_ocr/model'
 
     crnn = CRNNInference(app_scenes=args.app_scenes,
                          alphabet_mode=args.alphabet_mode,

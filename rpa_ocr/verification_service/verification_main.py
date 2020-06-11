@@ -21,7 +21,7 @@ def ocr_pipeline_main(image_with_base64, app_scenes):
 
     # print(base_config)
     crnn = CRNNInference(app_scenes=app_scenes,
-                         model_path='model')
+                         model_path='/model')
     res_str = crnn.predict(image_with_base64)
     # res_str = CRNNInference(base_config).predict(image_with_base64)
     return res_str
