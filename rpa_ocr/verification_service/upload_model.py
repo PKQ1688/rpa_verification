@@ -48,6 +48,7 @@ def upload_model_file():
                 upload_path = os.path.join(base_path, 'model',
                                            secure_filename(f.filename))  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
                 f.save(upload_path)
+                return json.dumps({"status": 0}, ensure_ascii=False)
             else:
                 return json.dumps({"error_msg": "data is None", "status": 1}, ensure_ascii=False)
     except Exception as e:
@@ -57,4 +58,3 @@ def upload_model_file():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=2020, debug=True)
-
