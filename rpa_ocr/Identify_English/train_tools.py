@@ -39,7 +39,7 @@ class Train(object):
                  app_scenes,
                  alphabet_mode='eng',
                  data_path=None,
-                 model_path=None,
+                 model_path='model',
                  short_size=32,
                  verification_length=4,
                  device='cpu',
