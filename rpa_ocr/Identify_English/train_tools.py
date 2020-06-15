@@ -8,6 +8,8 @@ import os
 import sys
 import time
 import random
+import json
+import requests
 from tqdm import tqdm
 
 import torch
@@ -45,7 +47,8 @@ class Train(object):
                  lr=1e-3,
                  batch_size=256,
                  num_works=0,
-                 target_acc=0.95):
+                 target_acc=0.95,
+                 cloud_service=True):
         # general_config = params['GeneralConfig']
         # train_config = params['TrainConfig']
 
@@ -87,6 +90,9 @@ class Train(object):
         self.batch_size = batch_size
         self.workers = num_works
 
+        self.cloud_service = cloud_service
+        self.url = "http://192.168.1.135:12020/upload_service/"
+
         # nh:size of the lstm hidden state
         self.model = CRNN(imgH=self.short_size, nc=1, nclass=len(alphabet), nh=256)
         self.model.apply(self.weights_init)
@@ -127,6 +133,13 @@ class Train(object):
                                          alphabet_dict=self.alphabet_dict,
                                          verification_length=self.verification_length,
                                          is_training=False)
+
+    def get_result(self, file_path):
+        files = {'file': open(file_path, 'rb')}
+        r = requests.post(self.url, files=files)
+        res = json.loads(r.text)
+        # print(res)
+        return res
 
     @staticmethod
     def read_alphabet(alphabet_mode):
@@ -241,6 +254,11 @@ class Train(object):
                     self.patient_epoch += 1
                 if self.val_best_acc > self.target_acc or self.patient_epoch > 30:
                     break
+
+        if self.cloud_service:
+            file_path = os.path.join(self.model_path, self.app_scenes + "_verification.pth")
+            res = self.get_result(file_path)
+            print(res)
 
 
 if __name__ == '__main__':
