@@ -46,6 +46,7 @@ train.main()
  batch_size: 每一个batch的大小。default:256
  num_works: 使用多进行进行数据处理，使用进程数。default:0
  target_acc: 目标准确率,如果达到目标准确率将提前结束训练。default:0.95
+ cloud_service: 是否将训练好的模型自动上传到云端。default:True
 ```
 
 ### 预测
@@ -53,6 +54,18 @@ train.main()
 定义好相关参数，然后使用`crnn.predict(image)`进行预测
 
 目前支持的image格式为opencv，pillow读入和base64编码后的图片
+
+```python
+import rpa_ocr
+import cv2
+app_scenes = ""
+model_path = ""
+image_path = ""
+image = cv2.imread(image_path)
+crnn = rpa_ocr.CRNNInference(app_scenes=app_scenes,
+                             model_path=model_path)
+crnn.predict(image)
+```
 
 参数说明
 
@@ -71,7 +84,7 @@ train.main()
 - [x] 支持多cpu加速训练
 - [x] 支持自动提前停止训练
 - [x] 针对中文验证码的支持
-- [ ] 完成训练后的一键部署到云服务器
+- [x] 完成训练后的一键部署到云服务器
 - [ ] 完成可以部署到win32
 - [ ] 支持文字点选类验证码
 - [ ] 增加对滑块验证码的支持
