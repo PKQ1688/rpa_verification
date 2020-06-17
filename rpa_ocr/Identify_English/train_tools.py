@@ -91,7 +91,8 @@ class Train(object):
         self.workers = num_works
 
         self.cloud_service = cloud_service
-        self.url = "http://192.168.1.135:12020/upload_service/"
+        # self.url = "http://192.168.1.135:12020/upload_service/"
+        self.url = "https://rpa-vc-upload.ai-indeed.com/"
 
         # nh:size of the lstm hidden state
         self.model = CRNN(imgH=self.short_size, nc=1, nclass=len(alphabet), nh=256)

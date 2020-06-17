@@ -12,6 +12,8 @@ from PIL import Image
 from rpa_ocr.Identify_English.use_alphabet import *
 from rpa_ocr.Identify_English.crnn_model import CRNN
 
+torch.set_printoptions(precision=8)
+
 
 class CRNNInference(object):
     def __init__(self,
@@ -46,7 +48,7 @@ class CRNNInference(object):
         self.transform = transforms.Compose([transforms.ToTensor()])
 
         self.model = CRNN(imgH=self.short_size, nc=1, nclass=len(alphabet), nh=256)
-        self.init_torch_tensor()
+        # self.init_torch_tensor()
         self.resume()
         self.model.eval()
 
@@ -91,14 +93,22 @@ class CRNNInference(object):
         img = cv2.resize(img, (imgW, self.short_size))
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
         img = img[:, :, np.newaxis]
         img = self.transform(img)
+        # img = (img / 255.).astype(np.float32)
+        # print(img.dtype)
+        # img = torch.from_numpy(img).permute(2, 0, 1)
 
         img = img.unsqueeze(0)
         with torch.no_grad():
             print(img.size())
+            print(img[0][0][0][0])
+            print(img)
             output = self.model(img)
 
+        print(output)
+        print(output.shape)
         output = output.squeeze()
 
         _, preds = output.max(1)
@@ -108,11 +118,13 @@ class CRNNInference(object):
         res_str = ""
 
         for i in range(len(preds_decode_list)):
-            if i == 0 and preds_decode_list[i] != '-':
-                res_str += preds_decode_list[i]
-            if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
-                res_str += preds_decode_list[i]
+            res_str += preds_decode_list[i]
+            # if i == 0 and preds_decode_list[i] != '-':
+            #     res_str += preds_decode_list[i]
+            # if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
+            #     res_str += preds_decode_list[i]
 
+        print(res_str)
         if len(res_str) > self.verification_length:
             res_str = res_str[-self.verification_length:]
         return res_str
@@ -146,6 +158,6 @@ if __name__ == '__main__':
                          verification_length=args.verification_length,
                          device=args.device)
 
-    image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6Ds.png')
-
+    image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6aD.png')
+    # image = cv2.imread('test_imgs/1EXc.png')
     print(crnn.predict(image=image))

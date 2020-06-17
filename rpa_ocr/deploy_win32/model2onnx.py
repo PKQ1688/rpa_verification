@@ -15,13 +15,14 @@ def convert_model(torch_model, model_path):
         torch_model,
         x,
         "crnn.onnx",
-        verbose=True,
+        export_params=True,
+        verbose=False,
         input_names=["input"],
         output_names=["output"],
         dynamic_axes={
             "input":
                 {
-                    0: "batch_size", 2: "h", 3: "w"
+                    0: "batch_size", 3: "w"
                 },
             "output": {
                 0: "batch_size"
