@@ -1,0 +1,32 @@
+version: '3.5'
+services:
+  rpa-verification-code-upload-prod:
+    image: dev.registry.ii-ai.tech/${PROJECT_NAME}/${SERVICE_NAME}:${IMAGE_VERSION}
+    networks:
+      - ii-swarm-net
+    volumes:
+      - rpa-verification-code-upload-prod-data:/app/rpa_ocr/verification_service/model
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+
+
+networks:
+  ii-swarm-net:
+    external: true
+
+volumes:
+  rpa-verification-code-upload-prod-data:
+    driver_opts:
+      type: "nfs"
+      o: "addr=0b3de4a685-gdf58.cn-hangzhou.nas.aliyuncs.com,noresvport,vers=4.0,nolock,soft,rw"
+      device: ":/rpa-verification-code/prod"
+
