@@ -4,34 +4,36 @@
 
 ### 版本号 
 
-    0.1.0
+    0.1.1
 
 ### 使用方法
 
  安装
 
-### 使用pip命令安装
+#### 新建conda环境
+
+`conda create -n rpa-ocr python=3.7`
+
+#### 使用pip命令安装
       
 `pip install rpa-ocr`
-    
-### 训练
+
+note: 如果在安装过程中发生某些库安装失败，使用`pip`重新安装即可
+
+#### 训练
 
 定义好相关参数然后使用`train.main()`命令训练
     
 ```python
 import rpa_ocr
 app_scenes = ""
-alphabet_mode = ""
 data_path = ""
-model_path = ""
 train = rpa_ocr.Train(app_scenes=app_scenes,
-                      alphabet_mode=alphabet_mode,
-                      data_path=data_path,
-                      model_path=model_path)
+                      data_path=data_path)
 train.main()
 ```
      
-### 参数说明
+#### 参数说明
 
 ```
  app_scenes: 当前验证码的使用场景，也是全局标识符
@@ -49,7 +51,7 @@ train.main()
  cloud_service: 是否将训练好的模型自动上传到云端。default:True
 ```
 
-### 预测
+#### 预测
 
 定义好相关参数，然后使用`crnn.predict(image)`进行预测
 
@@ -67,7 +69,7 @@ crnn = rpa_ocr.CRNNInference(app_scenes=app_scenes,
 crnn.predict(image)
 ```
 
-参数说明
+#### 参数说明
 
 ```
  app_scenes: 当前验证码的使用场景，也是全局标识符
