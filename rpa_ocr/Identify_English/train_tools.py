@@ -251,6 +251,7 @@ class Train(object):
                                os.path.join(self.model_path,
                                             self.app_scenes + "_verification.pth"))
                     self.patient_epoch = 0
+                    self.val_best_acc = val_acc
                 else:
                     self.patient_epoch += 1
                 if self.val_best_acc > self.target_acc or self.patient_epoch > 30:
