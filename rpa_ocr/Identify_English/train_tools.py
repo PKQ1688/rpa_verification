@@ -47,7 +47,7 @@ class Train(object):
                  lr=1e-3,
                  batch_size=256,
                  num_works=0,
-                 target_acc=0.95,
+                 target_acc=0.98,
                  cloud_service=True):
         # general_config = params['GeneralConfig']
         # train_config = params['TrainConfig']
