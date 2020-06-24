@@ -6,12 +6,12 @@ import base64
 import cv2
 
 # file_path = '/home/shizai/adolf/data/jindie/ehtd.png'
-file_path = 'test_imgs/2BPX.png'
+file_path = 'test_imgs/RUVY.png'
 # img = cv2.imread(file_path)
 # print(img.shape)
 
-url = "https://rpa-vc-verify.ai-indeed.com/verification_service/"
-# url = "http://192.168.0.13:5000/ocr_service/"
+# url = "https://rpa-vc-verify.ai-indeed.com/verification_service/"
+url = "http://127.0.0.1:2001/verification_service/"
 
 
 def get_result(encodestr):

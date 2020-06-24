@@ -26,11 +26,11 @@ class CRNNInference(object):
         # general_config = params['GeneralConfig']
         # infer_config = params['InferenceConfig']
         if app_scenes is None:
-            print('请输入使用场景')
+            print('no app_scenes')
             sys.exit(1)
 
         if model_path is None:
-            print('请输入存放模型文件的地址')
+            print('no model_path')
             sys.exit(1)
         self.app_scenes = app_scenes
 
@@ -119,7 +119,6 @@ class CRNNInference(object):
         res_str = ""
 
         for i in range(len(preds_decode_list)):
-            res_str += preds_decode_list[i]
             if i == 0 and preds_decode_list[i] != '-':
                 res_str += preds_decode_list[i]
             if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
@@ -149,7 +148,7 @@ if __name__ == '__main__':
                         default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     args = parser.parse_args()
 
-    args.app_scenes = 'tianyi'
+    args.app_scenes = 'dazongguan'
     args.model_path = '/home/shizai/adolf/model/'
 
     crnn = CRNNInference(app_scenes=args.app_scenes,
@@ -159,6 +158,6 @@ if __name__ == '__main__':
                          verification_length=args.verification_length,
                          device=args.device)
 
-    image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6aD.png')
-    # image = cv2.imread('test_imgs/1EXc.png')
+    # image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6aD.png')
+    image = cv2.imread('test_imgs/2BPX.png')
     print(crnn.predict(image=image))
