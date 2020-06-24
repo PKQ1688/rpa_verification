@@ -5,7 +5,7 @@ services:
     networks:
       - ii-swarm-net
     volumes:
-      - rpa-verification-code-upload-prod-data:/app/rpa_ocr/verification_service/model
+      - rpa-verification-code-upload-prod-data:/app/model
     deploy:
       mode: replicated
       replicas: 1
