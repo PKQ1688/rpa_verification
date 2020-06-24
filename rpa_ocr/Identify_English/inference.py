@@ -47,7 +47,7 @@ class CRNNInference(object):
 
         self.transform = transforms.Compose([transforms.ToTensor()])
 
-        self.model = CRNN(imgH=self.short_size, nc=1, nclass=len(alphabet), nh=256)
+        self.model = CRNN(imgH=self.short_size, nc=3, nclass=len(alphabet), nh=256)
         # self.init_torch_tensor()
         self.resume()
         self.model.eval()
@@ -92,7 +92,7 @@ class CRNNInference(object):
         imgW = int(img.shape[1] * self.short_size / img.shape[0])
         img = cv2.resize(img, (imgW, self.short_size))
 
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         img = img[:, :, np.newaxis]
         img = self.transform(img)

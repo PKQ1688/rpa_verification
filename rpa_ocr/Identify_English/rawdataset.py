@@ -38,6 +38,9 @@ class RawDataset(data.Dataset):
             )
         self.img_input = list()
 
+        img_1 = cv2.imread(os.path.join(self.root, self.patients[0]))
+        print(img_1.shape)
+
         for img_name in tqdm(self.patients):
             try:
                 img_path = os.path.join(self.root, img_name)
@@ -45,7 +48,7 @@ class RawDataset(data.Dataset):
                 self.imgW = int(img.shape[1] * self.imgH / img.shape[0])
                 assert img.shape[2] == 3, "请读入3通道图片"
                 img = cv2.resize(img, (self.imgW, self.imgH))
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 label = img_name.split('.')[0][:verification_length]
                 self.img_input.append((img, label))
             except Exception as e:
@@ -72,7 +75,7 @@ class RawDataset(data.Dataset):
         try:
             label = [self.alphabet_dict[char] for char in label_str]
         except Exception as e:
-            print(e)
+            print(label_str, e)
             label_str = label_str.replace(' ', '')
             label = [self.alphabet_dict[char] for char in label_str]
         length = [len(label)]

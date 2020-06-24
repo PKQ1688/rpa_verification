@@ -95,7 +95,7 @@ class Train(object):
         self.url = "https://rpa-vc-upload.ai-indeed.com/upload_service/"
 
         # nh:size of the lstm hidden state
-        self.model = CRNN(imgH=self.short_size, nc=1, nclass=len(alphabet), nh=256)
+        self.model = CRNN(imgH=self.short_size, nc=3, nclass=len(alphabet), nh=256)
         self.model.apply(self.weights_init)
 
         model = self.model.to(self.device)
