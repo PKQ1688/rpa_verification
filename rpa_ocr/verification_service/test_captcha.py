@@ -10,12 +10,12 @@ file_path = 'test_imgs/2AC5.png'
 # img = cv2.imread(file_path)
 # print(img.shape)
 
-# url = "https://rpa-vc-verify.ai-indeed.com/verification_service/"
-url = "http://127.0.0.1:2001/verification_service/"
+url = "https://rpa-vc-verify.ai-indeed.com/verification_service/"
+# url = "http://127.0.0.1:2001/verification_service/"
 
 
 def get_result(encodestr):
-    payload = {"image": encodestr, "scenes": 'dazongguan'}
+    payload = {"image": encodestr, "scenes": 'tianyi'}
     r = requests.post(url, json=payload)
     # print(r.text)
     res = json.loads(r.text)
