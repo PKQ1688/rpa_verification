@@ -5,6 +5,6 @@ ADD ./source ./
 
 EXPOSE 2020
 
-WORKDIR rpa_ocr/verification_service/
+# WORKDIR rpa_ocr/verification_service/
 
-ENTRYPOINT ["python", "upload_model.py"]
+ENTRYPOINT ["python", "-m", "rpa_ocr.verification_service.upload_model"]
