@@ -6,7 +6,7 @@ import base64
 import cv2
 
 # file_path = '/home/shizai/adolf/data/jindie/ehtd.png'
-file_path = 'test_imgs/RUVY.png'
+file_path = 'test_imgs/2AC5.png'
 # img = cv2.imread(file_path)
 # print(img.shape)
 

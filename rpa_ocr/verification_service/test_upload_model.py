@@ -12,7 +12,7 @@ def get_result(file_path):
     return res
 
 
-file_path = 'rpa_ocr/model/custom_verification.pth'
+file_path = 'model/dazongguan_verification.pth'
 # file_path = 'rpa_ocr/verification_service/__init__.py'
 
 get_result(file_path)
