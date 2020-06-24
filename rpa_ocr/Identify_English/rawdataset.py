@@ -69,6 +69,11 @@ class RawDataset(data.Dataset):
     def converter_text_to_label(self, label_str):
         # print(label_str)
         # print(self.alphabet_dict)
-        label = [self.alphabet_dict[char] for char in label_str]
+        try:
+            label = [self.alphabet_dict[char] for char in label_str]
+        except Exception as e:
+            print(e)
+            label_str = label_str.replace(' ', '')
+            label = [self.alphabet_dict[char] for char in label_str]
         length = [len(label)]
         return torch.IntTensor(label), torch.IntTensor(length)

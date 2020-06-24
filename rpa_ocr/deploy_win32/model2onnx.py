@@ -32,4 +32,4 @@ def convert_model(torch_model, model_path):
 
 
 torchmodel = CRNN(imgH=32, nc=1, nclass=63, nh=256)
-convert_model(torch_model=torchmodel, model_path='rpa_ocr/model/custom_verification.pth')
+convert_model(torch_model=torchmodel, model_path='/home/shizai/adolf/model/2039_verification.pth')

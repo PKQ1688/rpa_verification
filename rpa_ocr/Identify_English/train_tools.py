@@ -82,7 +82,7 @@ class Train(object):
         self.data_path = data_path
         self.device = device
         self.model_path = model_path
-        print(model_path)
+        # print(model_path)
         if not os.path.exists(self.model_path):
             os.mkdir(self.model_path)
         self.epochs = epochs
@@ -111,6 +111,7 @@ class Train(object):
         self.target_acc = target_acc
 
         self.patient_epoch = 0
+        self.patient_acc = 0
 
     @staticmethod
     def weights_init(m):
@@ -254,7 +255,10 @@ class Train(object):
                     self.val_best_acc = val_acc
                 else:
                     self.patient_epoch += 1
-                if self.val_best_acc > self.target_acc or self.patient_epoch > 30:
+                if self.val_best_acc > self.target_acc:
+                    self.patient_acc += 1
+
+                if self.patient_acc > 30 or self.patient_epoch > 100:
                     break
 
         if self.cloud_service:
@@ -266,7 +270,7 @@ class Train(object):
 if __name__ == '__main__':
     # import yaml
 
-    # os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
     # with open('Identify_English/Identify_English.yaml', 'r') as fp:
     #     config = yaml.load(fp.read(), Loader=yaml.FullLoader)
@@ -290,7 +294,7 @@ if __name__ == '__main__':
     parser.add_argument("--verification_length", "-v", type=int, const=True,
                         default=4, nargs='?', help="length of verification")
     parser.add_argument("--device", "-dev", type=str,
-                        default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
+                        default="cuda", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     parser.add_argument("--epochs", "-e", type=int,
                         default=1200, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--lr", "-l", type=float,
@@ -300,11 +304,11 @@ if __name__ == '__main__':
     parser.add_argument("--num_works", "-n", type=int,
                         default=0, nargs='?', help="how many processes are used to data")
     parser.add_argument("--target_acc", "-t", type=float,
-                        default=0.95, nargs='?', help="The target accuracy")
+                        default=0.99, nargs='?', help="The target accuracy")
     args = parser.parse_args()
 
-    args.app_scenes = 'jindie'
-    args.data_path = '/home/shizai/adolf/data/jindie/'
+    args.app_scenes = 'tianyi'
+    args.data_path = '/home/shizai/adolf/data/tianyi/'
     args.model_path = '/home/shizai/adolf/model/'
 
     trainer = Train(app_scenes=args.app_scenes,
@@ -318,7 +322,8 @@ if __name__ == '__main__':
                     lr=args.lr,
                     batch_size=args.batch_size,
                     num_works=args.num_works,
-                    target_acc=args.target_acc)
+                    target_acc=args.target_acc,
+                    cloud_service=True)
 
-    # trainer.main()
-    trainer.read_alphabet("ch")
+    trainer.main()
+    # trainer.read_alphabet("ch")
