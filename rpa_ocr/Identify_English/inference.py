@@ -33,6 +33,7 @@ class CRNNInference(object):
             print('no model_path')
             sys.exit(1)
         self.app_scenes = app_scenes
+        print('app_scenes:', app_scenes)
 
         alphabet = self.read_alphabet(alphabet_mode)
         self.alphabet_dict = {alphabet[i]: i for i in range(len(alphabet))}
