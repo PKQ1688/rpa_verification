@@ -94,21 +94,22 @@ class CRNNInference(object):
 
         # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        img = img[:, :, np.newaxis]
+        # img = img[:, :, :, np.newaxis]
+        # print(img.shape)
         img = self.transform(img)
         # img = (img / 255.).astype(np.float32)
         # print(img.dtype)
         # img = torch.from_numpy(img).permute(2, 0, 1)
-
+        # print(img.size())
         img = img.unsqueeze(0)
         with torch.no_grad():
-            print(img.size())
-            print(img[0][0][0][0])
-            print(img)
+            # print(img.size())
+            # print(img[0][0][0][0])
+            # print(img)
             output = self.model(img)
 
-        print(output)
-        print(output.shape)
+        # print(output)
+        # print(output.shape)
         output = output.squeeze()
 
         _, preds = output.max(1)
@@ -119,12 +120,12 @@ class CRNNInference(object):
 
         for i in range(len(preds_decode_list)):
             res_str += preds_decode_list[i]
-            # if i == 0 and preds_decode_list[i] != '-':
-            #     res_str += preds_decode_list[i]
-            # if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
-            #     res_str += preds_decode_list[i]
+            if i == 0 and preds_decode_list[i] != '-':
+                res_str += preds_decode_list[i]
+            if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
+                res_str += preds_decode_list[i]
 
-        print(res_str)
+        # print(res_str)
         if len(res_str) > self.verification_length:
             res_str = res_str[-self.verification_length:]
         return res_str
@@ -148,8 +149,8 @@ if __name__ == '__main__':
                         default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     args = parser.parse_args()
 
-    args.app_scenes = 'custom'
-    args.model_path = 'rpa_ocr/model'
+    args.app_scenes = 'tianyi'
+    args.model_path = '/home/shizai/adolf/model/'
 
     crnn = CRNNInference(app_scenes=args.app_scenes,
                          alphabet_mode=args.alphabet_mode,

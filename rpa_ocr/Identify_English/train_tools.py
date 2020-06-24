@@ -47,7 +47,7 @@ class Train(object):
                  lr=1e-3,
                  batch_size=256,
                  num_works=0,
-                 target_acc=0.98,
+                 target_acc=0.99,
                  cloud_service=True):
         # general_config = params['GeneralConfig']
         # train_config = params['TrainConfig']
@@ -211,7 +211,7 @@ class Train(object):
         for img, label, length in self.valid_loader:
             img = img.to(device=self.device, dtype=torch.float)
             label.to(device=self.device)
-            length = length.to(self.device)
+            # length = length.to(self.device)
             output = self.model(img)
             output = output.squeeze()
 
