@@ -52,6 +52,8 @@ class CRNNInference(object):
         self.resume()
         self.model.eval()
 
+        print('success！')
+
     def init_torch_tensor(self):
         torch.set_default_tensor_type('torch.FloatTensor')
         if self.device != "cpu":
