@@ -1,22 +1,27 @@
 # -*- coding:utf-8 -*-
 # @author :adolf
+import json
+import os
+import random
+import sys
+import time
+
+import requests
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import torch.utils.data as data
+from tqdm import tqdm
+
+from torchsummaryX import summary
+
+from rpa_ocr.Identify_English.lr_scheduler import LR_Scheduler_Head
 from rpa_ocr.Identify_English.crnn_model import CRNN
 from rpa_ocr.Identify_English.rawdataset import RawDataset
 from rpa_ocr.Identify_English.use_alphabet import *
 
-import os
-import sys
-import time
-import random
-import json
-import requests
-from tqdm import tqdm
-
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.utils.data as data
-import torch.nn.functional as F
+debug = False
 
 
 class Train(object):
@@ -48,7 +53,8 @@ class Train(object):
                  batch_size=256,
                  num_works=0,
                  target_acc=0.99,
-                 cloud_service=True):
+                 cloud_service=True,
+                 ):
         # general_config = params['GeneralConfig']
         # train_config = params['TrainConfig']
 
@@ -94,18 +100,30 @@ class Train(object):
         # self.url = "http://192.168.1.135:12020/upload_service/"
         self.url = "https://rpa-vc-upload.ai-indeed.com/upload_service/"
 
-        # nh:size of the lstm hidden state
-        self.model = CRNN(imgH=self.short_size, nc=3, nclass=len(alphabet), nh=256)
-        self.model.apply(self.weights_init)
-
-        model = self.model.to(self.device)
-        self.criterion = nn.CTCLoss(blank=len(alphabet) - 1, reduction='mean')
-        self.optimizer = optim.Adam(model.parameters())  # ,betas=(opt.beta1, 0.999))
-
         self.train_datasets = None
         self.valid_datasets = None
         self.init_datasets()
         self.train_loader, self.valid_loader = self.data_loaders()
+
+        # nh:size of the lstm hidden state
+        self.model = CRNN(imgH=self.short_size, nc=3, nclass=len(alphabet), nh=256, debug=debug)
+        self.model.apply(self.weights_init)
+
+        self.model = self.model.to(self.device)
+
+        if debug:
+            print('1111')
+            summary(self.model, torch.zeros(1, 3, 32, 50).to(self.device))
+            print('2222')
+
+        self.criterion = nn.CTCLoss(blank=len(alphabet) - 1, reduction='mean')
+        self.optimizer = optim.Adam(self.model.parameters())  # ,betas=(opt.beta1, 0.999))
+
+        self.scheduler = LR_Scheduler_Head(mode='poly',
+                                           base_lr=self.lr,
+                                           num_epochs=self.epochs,
+                                           iters_per_epoch=len(self.train_loader),
+                                           warmup_epochs=1)
 
         self.val_best_acc = 0
         self.target_acc = target_acc
@@ -121,20 +139,6 @@ class Train(object):
         elif classname.find('BatchNorm') != -1:
             m.weight.data.normal_(1.0, 0.02)
             m.bias.data.fill_(0)
-
-    def init_datasets(self):
-        self.train_datasets = RawDataset(file_path=self.data_path,
-                                         imgH=self.short_size,
-                                         alphabet_dict=self.alphabet_dict,
-                                         verification_length=self.verification_length,
-                                         is_training=True)
-        # valid_datasets = train_datasets
-        #
-        self.valid_datasets = RawDataset(file_path=self.data_path,
-                                         imgH=self.short_size,
-                                         alphabet_dict=self.alphabet_dict,
-                                         verification_length=self.verification_length,
-                                         is_training=False)
 
     def get_result(self, file_path):
         files = {'file': open(file_path, 'rb')}
@@ -158,6 +162,21 @@ class Train(object):
 
         return alphabet
 
+    def init_datasets(self):
+        self.train_datasets = RawDataset(file_path=self.data_path,
+                                         imgH=self.short_size,
+                                         alphabet_dict=self.alphabet_dict,
+                                         verification_length=self.verification_length,
+                                         is_training=True)
+
+        # self.valid_datasets = self.train_datasets
+
+        self.valid_datasets = RawDataset(file_path=self.data_path,
+                                         imgH=self.short_size,
+                                         alphabet_dict=self.alphabet_dict,
+                                         verification_length=self.verification_length,
+                                         is_training=False)
+
     def data_loaders(self):
         loader_train = data.DataLoader(
             self.train_datasets,
@@ -171,6 +190,7 @@ class Train(object):
         loader_valid = data.DataLoader(
             self.valid_datasets,
             batch_size=1,
+            shuffle=False,
             drop_last=False,
             num_workers=self.workers,
         )
@@ -180,6 +200,20 @@ class Train(object):
     def train_one_epoch(self, epoch):
         self.model.train()
         for batch_idx, (img, label, length) in enumerate(self.train_loader):
+
+            self.scheduler(self.optimizer, batch_idx, epoch, self.val_best_acc)
+
+            # print("---------------")
+            # print(batch_idx)
+            # # break
+            # print(label)
+            # label_list = label.tolist()
+            # preds_decode_list_0 = [self.decode_alphabet_dict[i] for i in label_list[0]]
+            # print(preds_decode_list_0)
+            # preds_decode_list_1 = [self.decode_alphabet_dict[i] for i in label_list[1]]
+            # print(preds_decode_list_1)
+            # print('---------------')
+
             img = img.to(device=self.device, dtype=torch.float)
             label = label.to(device=self.device)
             length = length.to(self.device)
@@ -201,13 +235,14 @@ class Train(object):
             self.optimizer.step()
 
             if batch_idx % 10 == 0:
-                print('Epoch [{}], Step [{}], Loss: {:.4f}'
+                print('\nEpoch [{}], Step [{}], Loss: {:.4f}'
                       .format(epoch, batch_idx, loss.item()))
 
     def val_model(self):
         self.model.eval()
         total = self.valid_loader.dataset.__len__()
         correct = 0
+        # acc = 0
         for img, label, length in self.valid_loader:
             img = img.to(device=self.device, dtype=torch.float)
             label.to(device=self.device)
@@ -225,8 +260,8 @@ class Train(object):
                     res_str += preds_decode_list[i]
                 if preds_decode_list[i] != preds_decode_list[i - 1] and preds_decode_list[i] != '-':
                     res_str += preds_decode_list[i]
-            pred_label, _ = self.valid_datasets.converter_text_to_label(res_str)
-            if random.randint(0, 200) == 50:
+            pred_label, _ = self.valid_datasets.converter_text_to_label(res_str, is_train=False)
+            if random.randint(0, 500) == 50:
                 print('label:', label)
                 print('pred_label', pred_label)
                 print('res_str', res_str)
@@ -251,14 +286,17 @@ class Train(object):
                     torch.save(self.model.state_dict(),
                                os.path.join(self.model_path,
                                             self.app_scenes + "_verification.pth"))
-                    self.patient_epoch = 0
+                    # self.patient_epoch = 0
+                    self.patient_epoch -= 1
                     self.val_best_acc = val_acc
                 else:
                     self.patient_epoch += 1
                 if self.val_best_acc > self.target_acc:
                     self.patient_acc += 1
+                else:
+                    self.patient_acc -= 1
 
-                if self.patient_acc > 30 or self.patient_epoch > 100:
+                if self.patient_acc > 20 or self.patient_epoch > 50:
                     break
 
         if self.cloud_service:
@@ -272,13 +310,7 @@ if __name__ == '__main__':
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
-    # with open('Identify_English/Identify_English.yaml', 'r') as fp:
-    #     config = yaml.load(fp.read(), Loader=yaml.FullLoader)
     import argparse
-
-    # test command:
-    # python -m rpa_ocr.Identify_English.train_tools -sc jindie -a eng
-    # -data /home/shizai/adolf/data/jindie -m /home/shizai/adolf/model/
 
     parser = argparse.ArgumentParser(description="Params to use fro train algorithm")
     parser.add_argument("--app_scenes", "-sc", type=str,
@@ -300,16 +332,20 @@ if __name__ == '__main__':
     parser.add_argument("--lr", "-l", type=float,
                         default=1e-3, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--batch_size", "-b", type=int,
-                        default=256, nargs='?', help="if you don't know what meaning,using default")
+                        default=512, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--num_works", "-n", type=int,
                         default=0, nargs='?', help="how many processes are used to data")
     parser.add_argument("--target_acc", "-t", type=float,
-                        default=0.99, nargs='?', help="The target accuracy")
+                        default=0.98, nargs='?', help="The target accuracy")
+    # parser.add_argument("--cloud_service", "-cloud", action="store_false",
+    #                     help="update model to cloud")
     args = parser.parse_args()
 
-    args.app_scenes = 'tianyi'
-    args.data_path = '/home/shizai/adolf/data/tianyi/'
+    args.app_scenes = 'xiaozhang'
+    args.data_path = '/home/shizai/adolf/data/xiaozhang/'
     args.model_path = '/home/shizai/adolf/model/'
+
+    # print(args.cloud_service)
 
     trainer = Train(app_scenes=args.app_scenes,
                     alphabet_mode=args.alphabet_mode,

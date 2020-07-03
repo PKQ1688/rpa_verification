@@ -20,8 +20,15 @@ def ocr_pipeline_main(image_with_base64, app_scenes):
     #     base_config[key] = config[key]
 
     # print(base_config)
+    short_size = 32
+    alphabet_mode = "eng"
+    verification_length = 4
     crnn = CRNNInference(app_scenes=app_scenes,
-                         model_path='model/')
+                         model_path='model/',
+                         short_size=short_size,
+                         alphabet_mode=alphabet_mode,
+                         verification_length=verification_length,
+                         )
     res_str = crnn.predict(image_with_base64)
     # res_str = CRNNInference(base_config).predict(image_with_base64)
     return res_str

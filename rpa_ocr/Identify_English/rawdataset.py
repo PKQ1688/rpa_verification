@@ -40,6 +40,7 @@ class RawDataset(data.Dataset):
 
         img_1 = cv2.imread(os.path.join(self.root, self.patients[0]))
         print(img_1.shape)
+        cv2.imwrite("test.png", img_1)
 
         for img_name in tqdm(self.patients):
             try:
@@ -69,7 +70,7 @@ class RawDataset(data.Dataset):
         label, length = self.target_transform(label)
         return img, label, length
 
-    def converter_text_to_label(self, label_str):
+    def converter_text_to_label(self, label_str, is_train=True):
         # print(label_str)
         # print(self.alphabet_dict)
         try:
@@ -79,4 +80,6 @@ class RawDataset(data.Dataset):
             label_str = label_str.replace(' ', '')
             label = [self.alphabet_dict[char] for char in label_str]
         length = [len(label)]
+        if len(label) != 4 and is_train:
+            print(label_str)
         return torch.IntTensor(label), torch.IntTensor(length)
