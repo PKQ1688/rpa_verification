@@ -13,6 +13,6 @@ def get_result(file_path):
 
 
 # file_path = "model/dazongguan_verification.pth"
-file_path = '/home/shizai/adolf/model/qiye_verification.pth'
+file_path = '/home/shizai/adolf/model/xiaozhang_verification.pth'
 
 get_result(file_path)
