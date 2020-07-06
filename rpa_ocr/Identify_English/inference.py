@@ -2,6 +2,8 @@
 # @author :adolf
 import sys
 import base64
+from typing import List, Any
+
 import cv2
 import numpy as np
 import os
@@ -12,26 +14,30 @@ from PIL import Image
 from rpa_ocr.Identify_English.use_alphabet import *
 from rpa_ocr.Identify_English.crnn_model import CRNN
 
+import onnx
+import onnxruntime as ort
+
 torch.set_printoptions(precision=8)
 
 
-class CRNNInference(object):
+class CRNNInference:
     def __init__(self,
                  app_scenes=None,
                  alphabet_mode='eng',
                  short_size=32,
                  verification_length=4,
                  device='cpu',
-                 model_path=None):
+                 model_path=None,
+                 use_onnx=False):
         # general_config = params['GeneralConfig']
         # infer_config = params['InferenceConfig']
         if app_scenes is None:
             print('no app_scenes')
-            sys.exit(1)
+            # sys.exit(1)
 
         if model_path is None:
             print('no model_path')
-            sys.exit(1)
+            # sys.exit(1)
         self.app_scenes = app_scenes
         print('app_scenes:', app_scenes)
 
@@ -45,13 +51,17 @@ class CRNNInference(object):
         self.device = device
         self.model_path = os.path.join(model_path,
                                        self.app_scenes + "_verification.pth")
+        #
+        if use_onnx:
+            self.model_path = os.path.join(model_path, self.app_scenes + "_verification.onnx")
 
         self.transform = transforms.Compose([transforms.ToTensor()])
 
         self.model = CRNN(imgH=self.short_size, nc=3, nclass=len(alphabet), nh=256)
         # self.init_torch_tensor()
         self.resume()
-        self.model.eval()
+        if not use_onnx:
+            self.model.eval()
 
         print('success！')
 
@@ -83,6 +93,16 @@ class CRNNInference(object):
 
         return alphabet
 
+    def model_infer(self, img):
+        with torch.no_grad():
+            output = self.model(img)
+        output = output.squeeze()
+        # print(output.shape)
+        _, preds = output.max(1)
+        preds_list = preds.tolist()
+        # print(preds_list)
+        return preds_list
+
     def predict(self, image):
         if isinstance(image, np.ndarray):
             img = image
@@ -105,21 +125,16 @@ class CRNNInference(object):
         # img = torch.from_numpy(img).permute(2, 0, 1)
         # print(img.size())
         img = img.unsqueeze(0)
-        with torch.no_grad():
-            # print(img.size())
-            # print(img[0][0][0][0])
-            # print(img)
-            output = self.model(img)
-
+        # with torch.no_grad():
+        #     # print(img.size())
+        #     # print(img[0][0][0][0])
+        #     # print(img)
+        #     output = self.model(img)
+        preds_list = self.model_infer(img)
         # print(output)
         # print(output.shape)
-        output = output.squeeze()
-
-        _, preds = output.max(1)
-        preds_list = preds.tolist()
-
-        preds_decode_list = [self.decode_alphabet_dict[i] for i in preds_list]
-        res_str = ""
+        preds_decode_list: List[Any] = [self.decode_alphabet_dict[i] for i in preds_list]
+        res_str: str = ""
 
         for i in range(len(preds_decode_list)):
             if i == 0 and preds_decode_list[i] != '-':
@@ -131,6 +146,50 @@ class CRNNInference(object):
         if len(res_str) > self.verification_length:
             res_str = res_str[-self.verification_length:]
         return res_str
+
+
+class OnnxCRNNInfer(CRNNInference):
+    def __init__(self, app_scenes=None,
+                 alphabet_mode='eng',
+                 short_size=32,
+                 verification_length=4,
+                 device='cpu',
+                 model_path=None):
+        self.app_scenes = app_scenes
+        self.alphabet_mode = alphabet_mode
+        self.short_size = short_size
+        self.verification_length = verification_length
+        self.device = device
+        self.model_path = model_path
+
+        super().__init__(app_scenes=self.app_scenes,
+                         alphabet_mode=self.alphabet_mode,
+                         short_size=self.short_size,
+                         verification_length=self.verification_length,
+                         device=self.device,
+                         model_path=self.model_path,
+                         use_onnx=True)
+        # print()
+
+    def resume(self):
+        # self.model = onnx.load(self.model_path)
+        # self.model.to(self.device)
+        # print(self.model_path)
+        self.model = ort.InferenceSession(self.model_path)
+
+    def model_infer(self, img):
+        img = img.to(self.device).numpy().astype(np.float32)
+        outputs = self.model.run(None, {'input': img})
+        # print(outputs)
+        output = outputs[0]
+        # print(output)
+        output = output.squeeze()
+        # print(output)
+        # print(output.shape)
+        preds = output.argmax(1)
+        preds_list = preds.tolist()
+        # print(preds_list)
+        return preds_list
 
 
 if __name__ == '__main__':
@@ -151,16 +210,27 @@ if __name__ == '__main__':
                         default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     args = parser.parse_args()
 
-    args.app_scenes = 'dazongguan'
-    args.model_path = '/home/shizai/adolf/model/'
+    args.app_scenes = 'xiaozhang'
+    args.model_path = 'model/'
 
-    crnn = CRNNInference(app_scenes=args.app_scenes,
-                         alphabet_mode=args.alphabet_mode,
-                         model_path=args.model_path,
-                         short_size=args.short_size,
-                         verification_length=args.verification_length,
-                         device=args.device)
+    # crnn = CRNNInference(app_scenes=args.app_scenes,
+    #                      alphabet_mode=args.alphabet_mode,
+    #                      model_path=args.model_path,
+    #                      short_size=args.short_size,
+    #                      verification_length=args.verification_length,
+    #                      device=args.device)
+
+    crnn_onnx = OnnxCRNNInfer(app_scenes=args.app_scenes,
+                              alphabet_mode=args.alphabet_mode,
+                              model_path=args.model_path,
+                              short_size=args.short_size,
+                              verification_length=args.verification_length,
+                              device=args.device)
 
     # image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6aD.png')
-    image = cv2.imread('test_imgs/2BPX.png')
-    print(crnn.predict(image=image))
+    # image = cv2.imread('test_imgs/2BPX.png')
+    image = cv2.imread('test_imgs/5VAH.png')
+    #
+    # print(crnn.predict(image=image))
+    # print('========================')
+    print(crnn_onnx.predict(image=image))

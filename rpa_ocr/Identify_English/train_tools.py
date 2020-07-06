@@ -21,6 +21,8 @@ from rpa_ocr.Identify_English.crnn_model import CRNN
 from rpa_ocr.Identify_English.rawdataset import RawDataset
 from rpa_ocr.Identify_English.use_alphabet import *
 
+from rpa_ocr.deploy_win32.model2onnx import convert_model
+
 debug = False
 
 
@@ -300,8 +302,9 @@ class Train(object):
                     break
 
         if self.cloud_service:
-            file_path = os.path.join(self.model_path, self.app_scenes + "_verification.pth")
-            res = self.get_result(file_path)
+            onnx_model_path = os.path.join(self.model_path, self.app_scenes + "_verification.onnx")
+            convert_model(self.model, onnx_model_path)
+            res = self.get_result(onnx_model_path)
             print(res)
 
 

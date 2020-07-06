@@ -25,7 +25,7 @@ class BidirectionalLSTM(nn.Module):
 
 class CRNN(nn.Module):
 
-    def __init__(self, imgH, nc, nclass, nh, n_rnn=2, short_size=32, leakyRelu=False, debug=False):
+    def __init__(self, imgH, nc, nclass, nh, n_rnn=2, leakyRelu=False, debug=False):
         super(CRNN, self).__init__()
 
         self.debug = debug

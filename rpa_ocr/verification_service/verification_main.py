@@ -4,6 +4,7 @@ import os
 import yaml
 
 from rpa_ocr.Identify_English.inference import CRNNInference
+from rpa_ocr.Identify_English.inference import OnnxCRNNInfer
 
 
 def ocr_pipeline_main(image_with_base64, app_scenes):
@@ -23,14 +24,19 @@ def ocr_pipeline_main(image_with_base64, app_scenes):
     short_size = 32
     alphabet_mode = "eng"
     verification_length = 4
-    crnn = CRNNInference(app_scenes=app_scenes,
-                         model_path='model/',
-                         short_size=short_size,
-                         alphabet_mode=alphabet_mode,
-                         verification_length=verification_length,
-                         )
-    res_str = crnn.predict(image_with_base64)
-    # res_str = CRNNInference(base_config).predict(image_with_base64)
+    # crnn = CRNNInference(app_scenes=app_scenes,
+    #                      model_path='model/',
+    #                      short_size=short_size,
+    #                      alphabet_mode=alphabet_mode,
+    #                      verification_length=verification_length,
+    #                      )
+    # res_str = crnn.predict(image_with_base64)
+    crnn_onnx = OnnxCRNNInfer(app_scenes=app_scenes,
+                              model_path='model/',
+                              short_size=short_size,
+                              alphabet_mode=alphabet_mode,
+                              verification_length=verification_length, )
+    res_str = crnn_onnx.predict(image_with_base64)
     return res_str
 
 
