@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rpa_ocr",
-    version="0.1.9",
+    version="0.2.0",
     author="adolf",
     author_email="adolf1321794021@gmail.com",
     description="A Tools for use algorithm for verification recognition",
