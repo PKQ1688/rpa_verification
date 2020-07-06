@@ -35,7 +35,7 @@ def ocr_pipeline_main(image_with_base64, app_scenes):
                               model_path='model/',
                               short_size=short_size,
                               alphabet_mode=alphabet_mode,
-                              verification_length=verification_length, )
+                              verification_length=verification_length)
     res_str = crnn_onnx.predict(image_with_base64)
     return res_str
 
