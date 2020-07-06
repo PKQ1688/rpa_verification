@@ -32,6 +32,6 @@ def convert_model(torch_model, onnx_path):
 
 
 torchmodel = CRNN(imgH=32, nc=3, nclass=63, nh=256)
-model_path = 'model/xiaozhang_verification.pth'
+model_path = 'model/dazongguan_verification.pth'
 torchmodel.load_state_dict(torch.load(model_path, map_location="cpu"))
-convert_model(torch_model=torchmodel, onnx_path="model/xiaozhang_verification.onnx")
+convert_model(torch_model=torchmodel, onnx_path="model/dazongguan_verification.onnx")
