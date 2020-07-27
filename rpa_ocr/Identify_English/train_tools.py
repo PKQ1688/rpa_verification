@@ -325,7 +325,7 @@ if __name__ == '__main__':
     parser.add_argument("--model_path", "-m", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="path to save model")
     parser.add_argument("--short_size", "-sh", type=int,
-                        default=32, nargs='?', help="short_size has to be a multiple of 16")
+                        default=64, nargs='?', help="short_size has to be a multiple of 16")
     parser.add_argument("--verification_length", "-v", type=int, const=True,
                         default=4, nargs='?', help="length of verification")
     parser.add_argument("--device", "-dev", type=str,
@@ -362,7 +362,7 @@ if __name__ == '__main__':
                     batch_size=args.batch_size,
                     num_works=args.num_works,
                     target_acc=args.target_acc,
-                    cloud_service=True)
+                    cloud_service=False)
 
     trainer.main()
     # trainer.read_alphabet("ch")

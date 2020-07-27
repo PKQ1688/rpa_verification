@@ -31,9 +31,9 @@ class CRNN(nn.Module):
         self.debug = debug
         assert imgH % 16 == 0, 'imgH has to be a multiple of 16'
 
-        ks = [3, 3, 3, 3, 3, 3, 2, 1]
-        ps = [1, 1, 1, 1, 1, 1, 0, 0]
-        ss = [1, 1, 1, 1, 1, 1, 1, 1]
+        ks = [3, 3, 3, 3, 3, 3, 2]
+        ps = [1, 1, 1, 1, 1, 1, 0]
+        ss = [1, 1, 1, 1, 1, 1, 1]
         nm = [64, 128, 256, 256, 512, 512, 512, 512, 512, 1024]
 
         cnn = nn.Sequential()
@@ -73,15 +73,13 @@ class CRNN(nn.Module):
 
         self.cnn = cnn
         self.rnn = nn.Sequential(
-            BidirectionalLSTM(512, nh, nh),
+            BidirectionalLSTM(512 * 3, nh, nh),
             BidirectionalLSTM(nh, nh, nclass))
 
     def forward(self, input):
         # conv features
         conv = self.cnn(input)
-        b, c, h, w = conv.size()
-        if self.debug:
-            print(b, c, h, w)
+
         # if self.debug:
         # conv = torch.reshape(conv, (b, c, h * w))
         # for i in range()
@@ -90,6 +88,11 @@ class CRNN(nn.Module):
         # conv = torch.stack((conv1, conv2), 1)
         # conv = torch.reshape(conv, (b, h * c, w))
         # print(conv.size())
+        conv = conv.flatten(start_dim=1, end_dim=2).unsqueeze(dim=2)
+        # print(conv.size())
+
+        b, c, h, w = conv.size()
+        # print(b, c, h, w)
         assert h == 1  # , "the height of conv must be 1"
         conv = conv.squeeze(2)
         conv = conv.permute(2, 0, 1)  # [w, b, c]
