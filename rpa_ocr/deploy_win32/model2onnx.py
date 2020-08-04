@@ -31,7 +31,8 @@ def convert_model(torch_model, onnx_path):
     )
 
 
-torchmodel = CRNN(imgH=64, nc=3, nclass=63, nh=256)
-model_path = '/home/shizai/adolf/model/shandong_verification.pth'
-torchmodel.load_state_dict(torch.load(model_path, map_location="cpu"))
-convert_model(torch_model=torchmodel, onnx_path="/home/shizai/adolf/model/shandong_verification.onnx")
+if __name__ == '__main__':
+    torchmodel = CRNN(imgH=64, nc=3, nclass=63, nh=256)
+    model_path = '/home/shizai/adolf/model/shandong_verification.pth'
+    torchmodel.load_state_dict(torch.load(model_path, map_location="cpu"))
+    convert_model(torch_model=torchmodel, onnx_path="/home/shizai/adolf/model/shandong_verification.onnx")
