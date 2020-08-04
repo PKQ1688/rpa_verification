@@ -14,7 +14,7 @@ from PIL import Image
 from rpa_ocr.Identify_English.use_alphabet import *
 from rpa_ocr.Identify_English.crnn_model import CRNN
 
-import onnx
+# import onnx
 import onnxruntime as ort
 
 torch.set_printoptions(precision=8)

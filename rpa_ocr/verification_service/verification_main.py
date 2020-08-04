@@ -3,7 +3,7 @@
 import os
 import yaml
 
-from rpa_ocr.Identify_English.inference import CRNNInference
+# from rpa_ocr.Identify_English.inference import CRNNInference
 from rpa_ocr.Identify_English.inference import OnnxCRNNInfer
 
 
