@@ -311,7 +311,7 @@ class Train(object):
 if __name__ == '__main__':
     # import yaml
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
     import argparse
 
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     parser.add_argument("--lr", "-l", type=float,
                         default=1e-3, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--batch_size", "-b", type=int,
-                        default=512, nargs='?', help="if you don't know what meaning,using default")
+                        default=128, nargs='?', help="if you don't know what meaning,using default")
     parser.add_argument("--num_works", "-n", type=int,
                         default=0, nargs='?', help="how many processes are used to data")
     parser.add_argument("--target_acc", "-t", type=float,
@@ -344,8 +344,8 @@ if __name__ == '__main__':
     #                     help="update model to cloud")
     args = parser.parse_args()
 
-    args.app_scenes = 'xiaozhang'
-    args.data_path = '/home/shizai/adolf/data/xiaozhang/'
+    args.app_scenes = 'shandong'
+    args.data_path = '/home/shizai/adolf/data/shandong/'
     args.model_path = '/home/shizai/adolf/model/'
 
     # print(args.cloud_service)

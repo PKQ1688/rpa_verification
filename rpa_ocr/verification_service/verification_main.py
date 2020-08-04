@@ -12,8 +12,8 @@ def ocr_pipeline_main(image_with_base64, app_scenes):
     # with open(config_path, 'r') as fp:
     #     config = yaml.load(fp.read(), Loader=yaml.FullLoader)
     #
-    # with open(config['_BASE_'], 'r') as fp:
-    #     base_config = yaml.load(fp.read(), Loader=yaml.FullLoader)
+    with open('rpa_ocr/verification_service/config.yaml', 'r') as fp:
+        config = yaml.load(fp.read(), Loader=yaml.FullLoader)
 
     # print(base_config)
     # print(config)
@@ -21,9 +21,11 @@ def ocr_pipeline_main(image_with_base64, app_scenes):
     #     base_config[key] = config[key]
 
     # print(base_config)
-    short_size = 32
-    alphabet_mode = "eng"
-    verification_length = 4
+
+    app_scenes_config = config.get(app_scenes, {})
+    short_size = app_scenes_config.get("short_size", 32)
+    alphabet_mode = app_scenes_config.get("alphabet_mode", "eng")
+    verification_length = app_scenes_config.get("verification_length", 4)
     # crnn = CRNNInference(app_scenes=app_scenes,
     #                      model_path='model/',
     #                      short_size=short_size,
