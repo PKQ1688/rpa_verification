@@ -36,4 +36,4 @@ def service_main():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=2001, debug=True)
+    app.run(host="0.0.0.0", port=2001, debug=False)

@@ -31,6 +31,9 @@ class CRNN(nn.Module):
         self.debug = debug
         assert imgH % 16 == 0, 'imgH has to be a multiple of 16'
 
+        multi = (imgH / 16) - 1
+        multi_channel = int(512 * multi)
+
         ks = [3, 3, 3, 3, 3, 3, 2]
         ps = [1, 1, 1, 1, 1, 1, 0]
         ss = [1, 1, 1, 1, 1, 1, 1]
@@ -73,7 +76,7 @@ class CRNN(nn.Module):
 
         self.cnn = cnn
         self.rnn = nn.Sequential(
-            BidirectionalLSTM(512 * 3, nh, nh),
+            BidirectionalLSTM(multi_channel, nh, nh),
             BidirectionalLSTM(nh, nh, nclass))
 
     def forward(self, input):
@@ -88,10 +91,14 @@ class CRNN(nn.Module):
         # conv = torch.stack((conv1, conv2), 1)
         # conv = torch.reshape(conv, (b, h * c, w))
         # print(conv.size())
-        conv = conv.flatten(start_dim=1, end_dim=2).unsqueeze(dim=2)
+        # conv = torch.flatten(conv, start_dim=1, end_dim=2).unsqueeze(dim=2)
         # print(conv.size())
 
         b, c, h, w = conv.size()
+        conv = conv.view(b, c * h, w).unsqueeze(dim=2)
+
+        b, c, h, w = conv.size()
+        # print('1111', conv.size())
         # print(b, c, h, w)
         assert h == 1  # , "the height of conv must be 1"
         conv = conv.squeeze(2)

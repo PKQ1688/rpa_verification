@@ -14,6 +14,6 @@ def get_result(file_path):
 
 
 # file_path = "model/dazongguan_verification.pth"
-file_path = '/home/shizai/adolf/model/shandong_verification.onnx'
+file_path = 'model/shandong_verification.onnx'
 
 get_result(file_path)

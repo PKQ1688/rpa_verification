@@ -203,34 +203,34 @@ if __name__ == '__main__':
     parser.add_argument("--model_path", "-m", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="path to save model")
     parser.add_argument("--short_size", "-sh", type=int,
-                        default=32, nargs='?', help="short_size has to be a multiple of 16")
+                        default=64, nargs='?', help="short_size has to be a multiple of 16")
     parser.add_argument("--verification_length", "-v", type=int, const=True,
                         default=4, nargs='?', help="length of verification")
     parser.add_argument("--device", "-dev", type=str,
                         default="cpu", nargs='?', help="use cpu or gpu;'cpu' or 'cuda'")
     args = parser.parse_args()
 
-    args.app_scenes = 'xiaozhang'
+    args.app_scenes = 'shandong'
     args.model_path = 'model/'
 
-    # crnn = CRNNInference(app_scenes=args.app_scenes,
-    #                      alphabet_mode=args.alphabet_mode,
-    #                      model_path=args.model_path,
-    #                      short_size=args.short_size,
-    #                      verification_length=args.verification_length,
-    #                      device=args.device)
+    crnn = CRNNInference(app_scenes=args.app_scenes,
+                         alphabet_mode=args.alphabet_mode,
+                         model_path=args.model_path,
+                         short_size=args.short_size,
+                         verification_length=args.verification_length,
+                         device=args.device)
 
-    crnn_onnx = OnnxCRNNInfer(app_scenes=args.app_scenes,
-                              alphabet_mode=args.alphabet_mode,
-                              model_path=args.model_path,
-                              short_size=args.short_size,
-                              verification_length=args.verification_length,
-                              device=args.device)
+    # crnn_onnx = OnnxCRNNInfer(app_scenes=args.app_scenes,
+    #                           alphabet_mode=args.alphabet_mode,
+    #                           model_path=args.model_path,
+    #                           short_size=args.short_size,
+    #                           verification_length=args.verification_length,
+    #                           device=args.device)
 
     # image = cv2.imread('/home/shizai/adolf/ai+rpa/rpa_verification/generate_verification/gen_ver/h6aD.png')
     # image = cv2.imread('test_imgs/2BPX.png')
     image = cv2.imread('test_imgs/5VAH.png')
     #
-    # print(crnn.predict(image=image))
+    print(crnn.predict(image=image))
     # print('========================')
-    print(crnn_onnx.predict(image=image))
+    # print(crnn_onnx.predict(image=image))
