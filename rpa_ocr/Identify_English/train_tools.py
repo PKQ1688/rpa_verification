@@ -303,7 +303,7 @@ class Train(object):
 
         if self.cloud_service:
             onnx_model_path = os.path.join(self.model_path, self.app_scenes + "_verification.onnx")
-            convert_model(self.model, onnx_model_path)
+            convert_model(self.model.to("cpu"), onnx_model_path)
             res = self.get_result(onnx_model_path)
             print(res)
 
@@ -311,7 +311,7 @@ class Train(object):
 if __name__ == '__main__':
     # import yaml
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
     import argparse
 
@@ -362,7 +362,7 @@ if __name__ == '__main__':
                     batch_size=args.batch_size,
                     num_works=args.num_works,
                     target_acc=args.target_acc,
-                    cloud_service=False)
+                    cloud_service=True)
 
     trainer.main()
     # trainer.read_alphabet("ch")

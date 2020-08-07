@@ -43,6 +43,9 @@ class RawDataset(data.Dataset):
         cv2.imwrite("test.png", img_1)
 
         for img_name in tqdm(self.patients):
+            img_name_ = img_name.split(".")[0]
+            if len(img_name_) != verification_length:
+                continue
             try:
                 img_path = os.path.join(self.root, img_name)
                 img = cv2.imread(img_path)
