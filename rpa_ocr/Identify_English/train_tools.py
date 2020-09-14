@@ -133,6 +133,8 @@ class Train(object):
         self.patient_epoch = 0
         self.patient_acc = 0
 
+        # print("self.train_datasets.imgW:", self.train_datasets.imgW)
+
     @staticmethod
     def weights_init(m):
         classname = m.__class__.__name__
@@ -303,7 +305,7 @@ class Train(object):
 
         if self.cloud_service:
             onnx_model_path = os.path.join(self.model_path, self.app_scenes + "_verification.onnx")
-            convert_model(self.model.to("cpu"), onnx_model_path)
+            convert_model(self.model.to("cpu"), onnx_model_path, img_h=self.short_size, img_w=self.train_datasets.imgW)
             res = self.get_result(onnx_model_path)
             print(res)
 
@@ -325,7 +327,7 @@ if __name__ == '__main__':
     parser.add_argument("--model_path", "-m", type=str,
                         default=argparse.SUPPRESS, nargs='?', help="path to save model")
     parser.add_argument("--short_size", "-sh", type=int,
-                        default=64, nargs='?', help="short_size has to be a multiple of 16")
+                        default=32, nargs='?', help="short_size has to be a multiple of 16")
     parser.add_argument("--verification_length", "-v", type=int, const=True,
                         default=4, nargs='?', help="length of verification")
     parser.add_argument("--device", "-dev", type=str,
@@ -344,8 +346,8 @@ if __name__ == '__main__':
     #                     help="update model to cloud")
     args = parser.parse_args()
 
-    args.app_scenes = 'shandong'
-    args.data_path = '/home/shizai/adolf/data/shandong/'
+    args.app_scenes = 'shanghai'
+    args.data_path = '/home/shizai/adolf/data/shanghai/'
     args.model_path = '/home/shizai/adolf/model/'
 
     # print(args.cloud_service)
