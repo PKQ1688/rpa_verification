@@ -4,3 +4,5 @@ shanghai:
   short_size: 64
 fujian:
   verification_length: 6
+poc_you:
+  verification_length: 5

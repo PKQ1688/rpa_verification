@@ -270,8 +270,8 @@ class Train(object):
                 print('pred_label', pred_label)
                 print('res_str', res_str)
             pred_label_list_a = pred_label.tolist()
-            if len(pred_label_list_a) > 4:
-                pred_label_list_a = pred_label_list_a[-4:]
+            if len(pred_label_list_a) > self.verification_length:
+                pred_label_list_a = pred_label_list_a[-self.verification_length:]
             if pred_label_list_a == label.tolist()[0]:
                 correct += 1
         acc = correct / total
