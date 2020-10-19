@@ -2,5 +2,5 @@ shandong:
   short_size: 64
 shanghai:
   short_size: 64
-fujian：
+fujian:
   verification_length: 6
