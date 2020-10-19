@@ -15,7 +15,7 @@ url = "https://rpa-vc-verify.ai-indeed.com/verification_service/"
 
 
 def get_result(encodestr):
-    payload = {"image": encodestr, "scenes": 'shanghai'}
+    payload = {"image": encodestr, "scenes": 'fujian'}
     r = requests.post(url, json=payload)
     # print(r.text)
     res = json.loads(r.text)

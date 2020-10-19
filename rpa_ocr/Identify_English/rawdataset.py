@@ -24,6 +24,8 @@ class RawDataset(data.Dataset):
         self.imgW = None
         self.is_training = is_training
 
+        self.verification_length = verification_length
+
         self.patients = list(sorted(os.listdir(self.root)))
         validation_cases = int(0.1 * len(self.patients))
 
@@ -40,11 +42,11 @@ class RawDataset(data.Dataset):
 
         img_1 = cv2.imread(os.path.join(self.root, self.patients[0]))
         print(img_1.shape)
-        cv2.imwrite("test.png", img_1)
+        # cv2.imwrite("test.png", img_1)
 
         for img_name in tqdm(self.patients):
             img_name_ = img_name.split(".")[0]
-            if len(img_name_) != verification_length:
+            if len(img_name_) != self.verification_length:
                 continue
             try:
                 img_path = os.path.join(self.root, img_name)
@@ -83,6 +85,6 @@ class RawDataset(data.Dataset):
             label_str = label_str.replace(' ', '')
             label = [self.alphabet_dict[char] for char in label_str]
         length = [len(label)]
-        if len(label) != 4 and is_train:
+        if len(label) != self.verification_length and is_train:
             print(label_str)
         return torch.IntTensor(label), torch.IntTensor(length)

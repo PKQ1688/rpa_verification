@@ -33,7 +33,7 @@ class Train(object):
     :param data_path: where data storage
     :param model_path: path to save model
     :param short_size: short_size has to be a multiple of 16
-    :param verification_length: length of verification; TODO support variable length of verification
+    :param verification_length: length of verification; TODO support variable length of captcha
     :param device: use cpu or gpu;"cpu" or "cuda"
     :param epochs: how long to train model
     :param lr: learning rate
@@ -313,7 +313,7 @@ class Train(object):
 if __name__ == '__main__':
     # import yaml
 
-    os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
     import argparse
 
@@ -346,9 +346,10 @@ if __name__ == '__main__':
     #                     help="update model to cloud")
     args = parser.parse_args()
 
-    args.app_scenes = 'shanghai'
-    args.data_path = '/home/shizai/adolf/data/shanghai/'
-    args.model_path = '/home/shizai/adolf/model/'
+    args.verification_length = 6
+    args.app_scenes = 'fujian'
+    args.data_path = '/home/shizai/adolf/data/captcha/fujian_tax/'
+    args.model_path = '/home/shizai/adolf/ocr_project/rpa_verification/model/'
 
     # print(args.cloud_service)
 
