@@ -346,9 +346,9 @@ if __name__ == '__main__':
     #                     help="update model to cloud")
     args = parser.parse_args()
 
-    args.verification_length = 6
-    args.app_scenes = 'fujian'
-    args.data_path = '/home/shizai/adolf/data/captcha/fujian_tax/'
+    # args.verification_length = 6
+    args.app_scenes = 'bohai'
+    args.data_path = '/home/shizai/adolf/data/captcha/bohai/'
     args.model_path = '/home/shizai/adolf/ocr_project/rpa_verification/model/'
 
     # print(args.cloud_service)

@@ -6,7 +6,7 @@ import base64
 import cv2
 
 # file_path = '/home/shizai/adolf/data/jindie/ehtd.png'
-file_path = 'test_imgs/0hFf.jpg'
+file_path = 'test_imgs/2CwH.png'
 # img = cv2.imread(file_path)
 # print(img.shape)
 
@@ -15,7 +15,7 @@ url = "https://rpa-vc-verify.ai-indeed.com/verification_service/"
 
 
 def get_result(encodestr):
-    payload = {"image": encodestr, "scenes": 'fujian'}
+    payload = {"image": encodestr, "scenes": 'shenzhen'}
     r = requests.post(url, json=payload)
     # print(r.text)
     res = json.loads(r.text)
